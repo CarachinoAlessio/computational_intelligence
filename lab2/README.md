@@ -20,3 +20,9 @@ Actually, this process is iterated a certain number of times, until it finds a f
 In this solution, mutation consists in randomly picking a gene from the _pool of genes_ and substituting it inside the genome.
 Also in this case, this process is iterated a certain number of times, but this time it only finds a fitter solution with respect to the original genome. This tweak is helpful more in those cases where `N` is high.
 ## Results
+|**N**| **n.elements (w)** |
+|-----|--------------------|
+| 5   | 5                  |
+| 10  | 10                 |
+| 20  | 25                 |
+| 100 | 266                |
