@@ -14,8 +14,8 @@ The genome is a represented as a list of tuples.
 PAY ATTENTION: in this solution, I tried to maximize a _negative_ fitness.
 When a solution is not feasible I applied a penalty term equal to -1000000000 (minus one billion).
 ## Crossover
-One-Point crossover is exploited. The point is randomly chosen. If the children has duplicated genes (tuples), the algorithm removes the duplicates and randomly picks the missing genes from the _pool of genes_. 
-Actually, this process is iterated a certain number of times, until it finds a feasible solution with respect to the original genome. In fact, feasible solutions are rare, considered simple concatenations of genes. This tweak is helpful more in those cases where `N` is high.
+One-Point crossover is exploited. The point is randomly chosen. If the child has duplicated genes (tuples), the algorithm removes the duplicates and randomly picks the missing genes from the _pool of genes_. 
+Actually, this process is iterated a certain number of times, until it finds a feasible solution with respect to the original genome. The child becomes the best solution in terms of fitness. In fact, feasible solutions are rare, considered simple concatenations of genes. This tweak is helpful more in those cases where `N` is high.
 ## Mutation
 In this solution, mutation consists in randomly picking a gene from the _pool of genes_ and substituting it inside the genome.
 Also in this case, this process is iterated a certain number of times, but this time it only finds a fitter solution with respect to the original genome. This tweak is helpful more in those cases where `N` is high.
