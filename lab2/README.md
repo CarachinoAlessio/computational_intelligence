@@ -23,9 +23,11 @@ Also in this case, this process is iterated a certain number of times, but this 
 
 The results are generated with `SEED=42`.
 
-|**N**| **n.elements (w)** |
-|-----|--------------------|
-| 5   | 5                  |
-| 10  | 10                 |
-| 20  | 27                 |
-| 100 | 192                |
+| **N** | **n.elements (w)** |
+|-------|--------------------|
+| 5     | 5                  |
+| 10    | 10                 |
+| 20    | 27                 |
+| 50    | 85                 |
+| 100   | 202                |
+| 500   | 1498               |
