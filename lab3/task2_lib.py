@@ -1,5 +1,8 @@
+from collections import namedtuple
 from tqdm import tqdm
-from task1_lib import *
+import random
+from task1_lib import gabriele, pure_random
+from nimply import Nimply, Nim, cook_status
 
 Individual = namedtuple("Individual", ["genome", "fitness"])
 
@@ -58,8 +61,9 @@ def w(genome: dict) -> float:
             if player == 0:
                 ply = strategy_ga(nim, genome)
             else:
-                #ply = random.choice([gabriele, pure_random])(nim)
-                ply = pure_random(nim)
+                ply = random.choice([gabriele, pure_random])(nim)
+                # ply = pure_random(nim)
+                # ply = gabriele(nim)
             nim.nimming(ply)
             player = 1 - player
         if player == 1:
@@ -81,11 +85,10 @@ def generate_population():
 
 
 def evolve(INITIAL_POPULATION):
-    POPULATION = deepcopy(INITIAL_POPULATION)
+    POPULATION = INITIAL_POPULATION
     best = Individual(dict(alpha=0.5), 0)
 
     offspring_size = 10
-
 
     for _ in tqdm(range(NUM_GENERATIONS)):
         offspring = list()
