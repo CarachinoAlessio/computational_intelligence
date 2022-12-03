@@ -31,13 +31,14 @@ def cross_over(genome1, genome2):
     child = dict()
     genome1keys = sorted(genome1.keys())
     genome2keys = sorted(genome2.keys())
-    split = random.randint(1, len(genome1keys)-1)
+    split = random.randint(1, len(genome1keys) - 1)
     for g in genome1keys[:split]:
         child[g] = genome1[g]
     for g in genome2keys[split:]:
         child[g] = genome2[g]
 
     return child
+
 
 
 def strategy_ga(state: Nim, genome) -> Nimply:
@@ -61,8 +62,9 @@ def strategy_ga(state: Nim, genome) -> Nimply:
         num_objects = random.randint(1, state.rows[row])
 
     return Nimply(row, num_objects)
-
 '''
+
+
 def strategy_ga(state: Nim, genome) -> Nimply:
     cooked = cook_status_t2(state)
     alpha = genome["alpha"]
@@ -73,7 +75,7 @@ def strategy_ga(state: Nim, genome) -> Nimply:
             random.choice(cooked["over_avg_rows"]),
             random.choice(cooked["under_avg_rows"])
         ],
-        weights=[alpha, 1-alpha],
+        weights=[alpha, 1 - alpha],
         k=1)[0]
 
     num_objects = random.choices(
@@ -81,12 +83,11 @@ def strategy_ga(state: Nim, genome) -> Nimply:
             1,
             random.randint(1, state.rows[row])
         ],
-        weights=[beta, 1-beta],
+        weights=[beta, 1 - beta],
         k=1)[0]
 
     return Nimply(row, num_objects)
 '''
-
 
 def w(genome: dict) -> float:
     won = 0
@@ -98,7 +99,7 @@ def w(genome: dict) -> float:
             if player == 0:
                 ply = strategy_ga(nim, genome)
             else:
-                #ply = random.choice([gabriele, pure_random])(nim)
+                # ply = random.choice([gabriele, pure_random])(nim)
                 # ply = pure_random(nim)
                 ply = gabriele(nim)
             nim.nimming(ply)
@@ -138,8 +139,12 @@ def evolve(INITIAL_POPULATION):
     best = Individual(dict(alpha=0.5, beta=0.5), 0)
 
     offspring_size = 10
+    print("[info] - Evolving...")
+    for g in tqdm(range(NUM_GENERATIONS)):
+        if g != 0 and g % 20 == 0:
+            print(f"[info] - best.fitness = {best.fitness}")
+            print(f"[info] - avg.fitness = {sum(i.fitness for i in POPULATION) / len(POPULATION)}")
 
-    for _ in tqdm(range(NUM_GENERATIONS)):
         offspring = list()
         for i in range(offspring_size):
             outcome = random.random()
@@ -156,15 +161,13 @@ def evolve(INITIAL_POPULATION):
         POPULATION = sorted(POPULATION, key=lambda i: i.fitness, reverse=True)[:POPULATION_SIZE]
         if POPULATION[0].fitness > best.fitness:
             best = copy.deepcopy(POPULATION[0])
-        #print(f"best.fitness = {best.fitness}")
-        #print(f"avg.fitness = {sum(i.fitness for i in POPULATION)/len(POPULATION)}")
-    print(f"solution: {best.genome}")
+        # print(f"best.fitness = {best.fitness}")
+        # print(f"avg.fitness = {sum(i.fitness for i in POPULATION)/len(POPULATION)}")
+    print(f"[info] - Best genome found is {best.genome} with fitness: {best.fitness}")
+
     return best.genome
 
 
 def run_GA():
     population = generate_population()
     return evolve(population)
-
-
-
