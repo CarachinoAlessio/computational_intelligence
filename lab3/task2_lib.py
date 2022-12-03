@@ -1,30 +1,40 @@
 from collections import namedtuple
 from tqdm import tqdm
 import random
+
+from nim_utils import play_n_matches
 from task1_lib import gabriele, pure_random
 from nimply import Nimply, Nim, cook_status
 
 Individual = namedtuple("Individual", ["genome", "fitness"])
 
 NUM_MATCHES = 100
-NUM_GENERATIONS = 25
+NUM_GENERATIONS = 13
 NIM_SIZE = 10
 POPULATION_SIZE = 30
 
 
 def mutation(genome):
     outcome = random.random()
+    gene = random.choice(list(genome.keys()))
     if outcome > .5:
-        genome["alpha"] = genome["alpha"] + 1 / 2
+        genome[gene] = (genome[gene] + 1) / 2
     else:
-        genome["alpha"] = genome["alpha"] / 2
+        genome[gene] = genome[gene] / 2
 
     return genome
 
 
 def cross_over(genome1, genome2):
     child = dict()
-    child["alpha"] = (genome1["alpha"] + genome2["alpha"]) / 2
+    genome1keys = sorted(genome1.keys())
+    genome2keys = sorted(genome2.keys())
+    split = random.randint(1, len(genome1keys)-1)
+    for g in genome1keys[:split]:
+        child[g] = genome1[g]
+    for g in genome2keys[split:]:
+        child[g] = genome2[g]
+
     return child
 
 
@@ -75,18 +85,30 @@ def tournament(population, tournament_size=2):
     return max(random.choices(population, k=tournament_size), key=lambda i: i.fitness)
 
 
+def tournament2(population, tournament_size=2):
+    candidates = random.choices(population, k=tournament_size)
+    winrates = list()
+    for i, candidate in enumerate(candidates):
+        winrates.append(
+            sum(
+                play_n_matches(candidate.genome, c.genome, strategy_ga, strategy_ga)
+                for index, c in enumerate(candidates) if i != index))
+
+    return candidates[winrates.index(max(winrates))]
+
+
 def generate_population():
     population = list()
     print("[info] - Start generating the population")
     for _ in tqdm(range(POPULATION_SIZE)):
-        genome = dict(alpha=random.random())
+        genome = dict(alpha=random.random(), beta=random.random())
         population.append(Individual(genome, w(genome)))
     return population
 
 
 def evolve(INITIAL_POPULATION):
     POPULATION = INITIAL_POPULATION
-    best = Individual(dict(alpha=0.5), 0)
+    best = Individual(dict(alpha=0.5, beta=0.5), 0)
 
     offspring_size = 10
 
@@ -95,11 +117,11 @@ def evolve(INITIAL_POPULATION):
         for i in range(offspring_size):
             outcome = random.random()
             if outcome < 0.5:
-                p = tournament(POPULATION)
+                p = tournament2(POPULATION)
                 o = mutation(p.genome)
             else:
-                p1 = tournament(POPULATION)
-                p2 = tournament(POPULATION)
+                p1 = tournament2(POPULATION)
+                p2 = tournament2(POPULATION)
                 o = cross_over(p1.genome, p2.genome)
             f = w(o)
             offspring.append(Individual(o, f))
@@ -107,7 +129,8 @@ def evolve(INITIAL_POPULATION):
         POPULATION = sorted(POPULATION, key=lambda i: i.fitness, reverse=True)[:POPULATION_SIZE]
         if POPULATION[0].fitness > best.fitness:
             best = POPULATION[0]
-
+        #print(f"best.fitness = {best.fitness}")
+        #print(f"avg.fitness = {sum(i.fitness for i in POPULATION)/len(POPULATION)}")
     print(f"solution: {best.genome}")
     return best.genome
 

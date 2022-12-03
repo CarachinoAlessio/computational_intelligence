@@ -51,3 +51,21 @@ def evaluate_GA(genome, strategy_ga, opponent_strategy: Callable, num_matches=10
         if player == 1:
             won += 1
     return won / num_matches
+
+
+def play_n_matches(genome1, genome2, strategy1, strategy2, num_matches=10, nim_size=10, k_size=None):
+    won = 0
+
+    for m in range(num_matches):
+        nim = Nim(nim_size, k=k_size)
+        player = 0
+        while nim:
+            if player == 0:
+                ply = strategy1(nim, genome1)
+            else:
+                ply = strategy2(nim, genome2)
+            nim.nimming(ply)
+            player = 1 - player
+        if player == 1:
+            won += 1
+    return won / num_matches
