@@ -37,7 +37,7 @@ def nim_sum(state: Nim) -> int:
     return result
 
 
-def cook_status(state: Nim) -> dict:
+def cook_status_t1(state: Nim) -> dict:
     cooked = dict()
 
     cooked["possible_moves"] = [
@@ -64,5 +64,31 @@ def cook_status(state: Nim) -> dict:
         tmp.nimming(m)
         brute_force.append((m, nim_sum(tmp)))
     cooked["brute_force"] = brute_force
+
+    return cooked
+
+
+def cook_status_t2(state: Nim) -> dict:
+    cooked = dict()
+
+    cooked["possible_moves"] = [
+        (r, o) for r, c in enumerate(state.rows) for o in range(1, c + 1) if state.k is None or o <= state.k
+    ]
+    cooked["active_rows_number"] = sum(o > 0 for o in state.rows)
+
+
+    cooked["shortest_row"] = min((x for x in enumerate(state.rows) if x[1] > 0), key=lambda y: y[1])[0]
+    cooked["longest_row"] = max((x for x in enumerate(state.rows)), key=lambda y: y[1])[0]
+    # cooked["nim_sum"] = nim_sum(state)
+    cooked["avg_objects"] = sum(i for i in state.rows if i > 0) / cooked["active_rows_number"]
+    cooked["over_avg_rows"] = list(i for i, e in enumerate(state.rows) if e >= cooked["avg_objects"])
+    cooked["under_avg_rows"] = list(i for i, e in enumerate(state.rows) if e <= cooked["avg_objects"] and e != 0)
+
+    if cooked["active_rows_number"] / len(state.rows) > 0.8:
+        cooked["game_type"] = "early"
+    elif cooked["active_rows_number"] / len(state.rows) > 0.2:
+        cooked["game_type"] = "mid"
+    else:
+        cooked["game_type"] = "end"
 
     return cooked

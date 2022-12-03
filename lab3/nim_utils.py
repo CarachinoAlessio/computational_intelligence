@@ -35,7 +35,7 @@ def evaluate(strategy: Callable, opponent_strategy: Callable, num_matches=1000, 
     return won / num_matches
 
 
-def evaluate_GA(genome, strategy_ga, opponent_strategy: Callable, num_matches=1000, nim_size=10, k_size=None):
+def evaluate_GA(genome, strategy_ga, opponent_strategy: Callable, num_matches=100, nim_size=10, k_size=None):
     won = 0
 
     for m in range(num_matches):

@@ -15,12 +15,12 @@ def gabriele(state: Nim) -> Nimply:
 
 
 def optimal_strategy(state: Nim) -> Nimply:
-    data = cook_status(state)
+    data = cook_status_t1(state)
     return next((bf for bf in data["brute_force"] if bf[1] == 0), random.choice(data["brute_force"]))[0]
 
 
 def strange_strategy(state: Nim) -> Nimply:
-    cooked = cook_status(state)
+    cooked = cook_status_t1(state)
     if abs(cooked["avg_objects"] - state.rows[cooked["longest_row"]]) < abs(
             cooked["avg_objects"] - state.rows[cooked["shortest_row"]]) or len(cooked["under_avg_rows"]) == 0:
         row = random.choice(cooked["over_avg_rows"])
@@ -32,7 +32,7 @@ def strange_strategy(state: Nim) -> Nimply:
 
 
 def strategy_v2(state: Nim) -> Nimply:
-    cooked = cook_status(state)
+    cooked = cook_status_t1(state)
     if cooked["active_rows_number"] % 3 == 0:
         row = random.choice([i for i, e in enumerate(state.rows) if e > 0])
         num_objects = state.rows[row]
@@ -54,7 +54,7 @@ def strategy_v2(state: Nim) -> Nimply:
 
 
 def strategy_v3(state: Nim) -> Nimply:
-    cooked = cook_status(state)
+    cooked = cook_status_t1(state)
 
     if cooked["active_rows_number"] % 2 == 1:
         row = random.choice([i for i, e in enumerate(state.rows) if e > 0])

@@ -1,28 +1,30 @@
+import copy
 from collections import namedtuple
 from tqdm import tqdm
 import random
 
 from nim_utils import play_n_matches
 from task1_lib import gabriele, pure_random
-from nimply import Nimply, Nim, cook_status
+from nimply import Nimply, Nim, cook_status_t2
 
 Individual = namedtuple("Individual", ["genome", "fitness"])
 
 NUM_MATCHES = 100
-NUM_GENERATIONS = 13
+NUM_GENERATIONS = 100
 NIM_SIZE = 10
 POPULATION_SIZE = 30
 
 
 def mutation(genome):
+    child = copy.deepcopy(genome)
     outcome = random.random()
     gene = random.choice(list(genome.keys()))
     if outcome > .5:
-        genome[gene] = (genome[gene] + 1) / 2
+        child[gene] = (genome[gene] + 1) / 2
     else:
-        genome[gene] = genome[gene] / 2
+        child[gene] = genome[gene] / 2
 
-    return genome
+    return child
 
 
 def cross_over(genome1, genome2):
@@ -39,7 +41,7 @@ def cross_over(genome1, genome2):
 
 
 def strategy_ga(state: Nim, genome) -> Nimply:
-    cooked = cook_status(state)
+    cooked = cook_status_t2(state)
     alpha = genome["alpha"]
     if alpha > 0.5:
 
@@ -60,6 +62,31 @@ def strategy_ga(state: Nim, genome) -> Nimply:
 
     return Nimply(row, num_objects)
 
+'''
+def strategy_ga(state: Nim, genome) -> Nimply:
+    cooked = cook_status_t2(state)
+    alpha = genome["alpha"]
+    beta = genome["beta"]
+
+    row = random.choices(
+        [
+            random.choice(cooked["over_avg_rows"]),
+            random.choice(cooked["under_avg_rows"])
+        ],
+        weights=[alpha, 1-alpha],
+        k=1)[0]
+
+    num_objects = random.choices(
+        [
+            1,
+            random.randint(1, state.rows[row])
+        ],
+        weights=[beta, 1-beta],
+        k=1)[0]
+
+    return Nimply(row, num_objects)
+'''
+
 
 def w(genome: dict) -> float:
     won = 0
@@ -71,9 +98,9 @@ def w(genome: dict) -> float:
             if player == 0:
                 ply = strategy_ga(nim, genome)
             else:
-                ply = random.choice([gabriele, pure_random])(nim)
+                #ply = random.choice([gabriele, pure_random])(nim)
                 # ply = pure_random(nim)
-                # ply = gabriele(nim)
+                ply = gabriele(nim)
             nim.nimming(ply)
             player = 1 - player
         if player == 1:
@@ -116,7 +143,7 @@ def evolve(INITIAL_POPULATION):
         offspring = list()
         for i in range(offspring_size):
             outcome = random.random()
-            if outcome < 0.5:
+            if outcome < 0.15:
                 p = tournament2(POPULATION)
                 o = mutation(p.genome)
             else:
@@ -128,7 +155,7 @@ def evolve(INITIAL_POPULATION):
         POPULATION += offspring
         POPULATION = sorted(POPULATION, key=lambda i: i.fitness, reverse=True)[:POPULATION_SIZE]
         if POPULATION[0].fitness > best.fitness:
-            best = POPULATION[0]
+            best = copy.deepcopy(POPULATION[0])
         #print(f"best.fitness = {best.fitness}")
         #print(f"avg.fitness = {sum(i.fitness for i in POPULATION)/len(POPULATION)}")
     print(f"solution: {best.genome}")
