@@ -27,6 +27,8 @@ class Nim:
 
     def nimming(self, ply: Nimply) -> None:
         row, num_objects = ply
+        if self.k is not None:
+            num_objects = min(num_objects, self.k)
         assert self._rows[row] >= num_objects
         assert self._k is None or num_objects <= self._k
         self._rows[row] -= num_objects
@@ -53,10 +55,10 @@ def cook_status_t1(state: Nim) -> dict:
 
     if cooked["active_rows_number"] / len(state.rows) > 0.8:
         cooked["game_type"] = "early"
-    elif cooked["active_rows_number"] / len(state.rows) > 0.2:
-        cooked["game_type"] = "mid"
-    else:
+    elif cooked["active_rows_number"] <= 3:
         cooked["game_type"] = "end"
+    else:
+        cooked["game_type"] = "mid"
 
     brute_force = list()
     for m in cooked["possible_moves"]:
