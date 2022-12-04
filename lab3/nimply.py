@@ -77,7 +77,7 @@ def cook_status_t2(state: Nim) -> dict:
         (r, o) for r, c in enumerate(state.rows) for o in range(1, c + 1) if state.k is None or o <= state.k
     ]
     cooked["active_rows_number"] = sum(o > 0 for o in state.rows)
-
+    cooked["num_obj"] = sum(o for o in state.rows)
 
     cooked["shortest_row"] = min((x for x in enumerate(state.rows) if x[1] > 0), key=lambda y: y[1])[0]
     cooked["longest_row"] = max((x for x in enumerate(state.rows)), key=lambda y: y[1])[0]

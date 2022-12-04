@@ -19,41 +19,7 @@ def optimal_strategy(state: Nim) -> Nimply:
     return next((bf for bf in data["brute_force"] if bf[1] == 0), random.choice(data["brute_force"]))[0]
 
 
-def strange_strategy(state: Nim) -> Nimply:
-    cooked = cook_status_t1(state)
-    if abs(cooked["avg_objects"] - state.rows[cooked["longest_row"]]) < abs(
-            cooked["avg_objects"] - state.rows[cooked["shortest_row"]]) or len(cooked["under_avg_rows"]) == 0:
-        row = random.choice(cooked["over_avg_rows"])
-        num_objects = random.randint(1, state.rows[row])
-    else:
-        row = random.choice(cooked["under_avg_rows"])
-        num_objects = random.randint(1, state.rows[row])
-    return Nimply(row, num_objects)
-
-
-def strategy_v2(state: Nim) -> Nimply:
-    cooked = cook_status_t1(state)
-    if cooked["active_rows_number"] % 3 == 0:
-        row = random.choice([i for i, e in enumerate(state.rows) if e > 0])
-        num_objects = state.rows[row]
-
-    elif cooked["active_rows_number"] % 2 == 0:
-        if state.rows[cooked["longest_row"]] > 1:
-            row = random.choice([i for i, e in enumerate(state.rows) if e > 1])
-            num_objects = state.rows[row] - 1
-        else:
-            row = random.choice([i for i, e in enumerate(state.rows) if e > 0])
-            num_objects = state.rows[row]
-
-    else:
-        row = random.choice([i for i, e in enumerate(state.rows) if e > 0])
-        # num_objects = random.randint(1, max(1, state.rows[row]-1))
-        num_objects = state.rows[row]
-
-    return Nimply(row, num_objects)
-
-
-def strategy_v3(state: Nim) -> Nimply:
+def fixed_rules_strategy(state: Nim) -> Nimply:
     cooked = cook_status_t1(state)
 
     if cooked["active_rows_number"] % 2 == 1:
