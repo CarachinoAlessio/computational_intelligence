@@ -41,6 +41,10 @@ def cross_over(genome1, genome2):
 
 
 def strategy_0(state: Nim, genome) -> Nimply:
+    if state.k is None:
+        k = 100000000
+    else:
+        k = state.k
     cooked = cook_status_t2(state)
     alpha = genome["alpha"]
     beta = genome["beta"]
@@ -59,59 +63,64 @@ def strategy_0(state: Nim, genome) -> Nimply:
             weights=[gamma, 1 - gamma],
             k=1)[0]
 
-        num_objects = ceil(beta * state.rows[row])
+        num_objects = min(k, ceil(beta * state.rows[row]))
 
     else:
 
         row = random.choice([i for i, e in enumerate(state.rows) if e > 0])
 
-        num_objects = ceil(alpha * state.rows[row])
+        num_objects = min(k, ceil(alpha * state.rows[row]))
 
     return Nimply(row, num_objects)
 
 
 def strategy_1(state: Nim, genome):
+    if state.k is None:
+        k = 100000000
+    else:
+        k = state.k
+
     cooked = cook_status_t2(state)
     alpha = genome["alpha"]
     beta = genome["beta"]
     if cooked["num_obj"] / cooked["active_rows_number"] * alpha > beta:
         if cooked["active_rows_number"] % 2 == 1:
             row = random.choice([i for i, e in enumerate(state.rows) if e > 0])
-            num_objects = state.rows[row]
+            num_objects = min(state.rows[row], k)
 
         else:
             if state.rows[cooked["longest_row"]] > 1:
                 row = random.choice([i for i, e in enumerate(state.rows) if e > 1])
-                num_objects = state.rows[row] - 1
+                num_objects = min(state.rows[row] - 1, k)
             else:
                 row = random.choice([i for i, e in enumerate(state.rows) if e > 0])
-                num_objects = state.rows[row]
+                num_objects = min(state.rows[row], k)
     else:
         if cooked["active_rows_number"] % 2 == 1:
             row = random.choice([i for i, e in enumerate(state.rows) if e > 0])
-            num_objects = state.rows[row] - 1
+            num_objects = min(state.rows[row] - 1, k)
 
         else:
             if state.rows[cooked["shortest_row"]] > 1:
                 row = random.choice([i for i, e in enumerate(state.rows) if e > 1])
-                num_objects = state.rows[row] - 1
+                num_objects = min(state.rows[row] - 1, k)
             else:
                 row = random.choice([i for i, e in enumerate(state.rows) if e > 0])
-                num_objects = state.rows[row]
+                num_objects = min(state.rows[row], k)
     return Nimply(row, num_objects)
 
 
 strategy_ga = strategy_0
 
 
-def w(genome: dict) -> float:
+def w(genome: dict) -> tuple[float, float]:
     wr1 = play_n_games(genome, gabriele)
     wr2 = play_n_games(genome, pure_random)
     return (wr1, wr2)
-    #return 0.7*wr1 + 0.3*wr2
+    #return 0.5*wr1 + 0.5*wr2
 
 
-def play_n_games(genome, strategy):
+def play_n_games(genome, strategy, opp_genome=None):
     won = 0
 
     for m in range(NUM_MATCHES):
@@ -121,7 +130,10 @@ def play_n_games(genome, strategy):
             if player == 0:
                 ply = strategy_ga(nim, genome)
             else:
-                ply = strategy(nim)
+                if opp_genome:
+                    ply = strategy(nim, opp_genome)
+                else:
+                    ply = strategy(nim)
             nim.nimming(ply)
             player = 1 - player
         if player == 1:
@@ -158,9 +170,9 @@ def generate_population(genome_parameters):
 
 def evolve(INITIAL_POPULATION):
     POPULATION = INITIAL_POPULATION
-    best = Individual(dict(alpha=0.5, beta=0.5, gamma=0.5), (0, 0))
+    best = Individual(dict(alpha=0.5, beta=0.5, gamma=0.5, delta=0.5), (0, 0))
 
-    offspring_size = 10
+    offspring_size = 20
     print("[info] - Evolving...")
     for g in tqdm(range(NUM_GENERATIONS)):
         '''
