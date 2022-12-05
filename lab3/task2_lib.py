@@ -5,7 +5,8 @@ import random
 from math import ceil
 from nim_utils import play_n_matches
 from task1_lib import gabriele, pure_random
-from nimply import Nimply, Nim, cook_status_t2
+from nimply import Nimply, Nim, cook_status_t2, sum_with_op
+from operator import xor, and_, or_
 
 Individual = namedtuple("Individual", ["genome", "fitness"])
 
@@ -109,6 +110,21 @@ def strategy_1(state: Nim, genome):
                 num_objects = min(state.rows[row], k)
     return Nimply(row, num_objects)
 
+
+def strategy_2(state: Nim, genome):
+    cooked = cook_status_t2(state)
+    alpha = genome["alpha"]
+    beta = genome["beta"]
+    gamma = genome["gamma"]
+    brute_force = list()
+
+    op = random.choices([and_, or_, xor], k=1, weights=[alpha, beta, gamma])[0]
+    for m in cooked["possible_moves"]:
+        tmp = copy.deepcopy(state)
+        tmp.nimming(m)
+        brute_force.append((m, sum_with_op(tmp, op)))
+    cooked["brute_force"] = brute_force
+    return next((bf for bf in cooked["brute_force"] if bf[1] == 0), random.choice(cooked["brute_force"]))[0]
 
 strategy_ga = strategy_0
 

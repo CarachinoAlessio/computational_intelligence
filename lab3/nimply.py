@@ -38,6 +38,10 @@ def nim_sum(state: Nim) -> int:
     *_, result = accumulate(state.rows, xor)
     return result
 
+def sum_with_op(state: Nim, op) -> int:
+    *_, result = accumulate(state.rows, op)
+    return result
+
 
 def cook_status_t1(state: Nim) -> dict:
     cooked = dict()

@@ -9,7 +9,7 @@ Create four different agents for the game `Nim`, you can find the full descripti
 ## **Task 3.1**
 
 The hardcoded strategy tries to exploit the number of object we could take depending on the number of `active_rows` left.
-It is more of a late game oriented and it can easily loses versus early game strategy (check `nim-sum` based strategies).
+It is more of a late game oriented and it can easily lose versus early game strategy (check `nim-sum` based strategies).
 
 Here is the workflow of the algorithm:
 ```
@@ -41,6 +41,12 @@ The two branches of this strategy exploit the hard-coded strategy in `Task 3.1` 
 
 In the end it can achieves 100% winrate over 100 games versus the `pure_random`, and the average win rate is 95%.
 It doesn't beat the `optimal_strategy` and that makes sense because we don't exploit `xor` operations or `nim-sum`.
+
+### **Strategy 2**
+There are three parameters also in this case. The concept is computing a different accumulation operation (and - or - xor).
+The parameters are basically weights that indicate which operation must be performed.
+After some generations, it will learn to exploit xor only (and it retrieves the optimal-strategy).
+Results are not reported for this strategy.
 
 # **Results**
 
