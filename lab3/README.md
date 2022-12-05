@@ -43,10 +43,17 @@ In the end it can achieves 100% winrate over 100 games versus the `pure_random`,
 It doesn't beat the `optimal_strategy` and that makes sense because we don't exploit `xor` operations or `nim-sum`.
 
 ### **Strategy 2**
-There are three parameters also in this case. The concept is computing a different accumulation operation (and - or - xor).
-The parameters are basically weights that indicate which operation must be performed.
+There are four parameters in this case.
+
+The concept is computing a different accumulation operation (and - or - xor),
+randomly picked according to the weight parameters (alpha - beta - gamma).
+The 'percentage' parameter is employed to choose how many objects must be selected.
+
+The choice is made initializing (with 'percentage')
+an array sorted with a lambda where the elements are put in the array according to their distance from the num_objects of the
+longest row; 'perc' determines how much the points must be distant from the longest_row.
+
 After some generations, it will learn to exploit xor only (and it retrieves the optimal-strategy).
-Results are not reported for this strategy.
 
 # **Results**
 
@@ -60,6 +67,8 @@ These results are calculated over 100 games on average.
 | strategy_0          | pure random           | 45%                    |
 | strategy_1          | gabriele              | 100%                   |
 | strategy_1          | pure random           | 97%                    |
+| strategy_2          | gabriele              | 98%                    |
+| strategy_2          | pure random           | 98%                    |
 | strategy_1          | strategy_0            | 80%                    |
 
 
