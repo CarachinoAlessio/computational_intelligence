@@ -33,10 +33,18 @@ class Nim:
         assert self._k is None or num_objects <= self._k
         self._rows[row] -= num_objects
 
+    def get_reward(self):
+        *_, result = accumulate(self.rows, xor)
+        if result == 0:
+            return 0
+        else:
+            return -1
+
 
 def nim_sum(state: Nim) -> int:
     *_, result = accumulate(state.rows, xor)
     return result
+
 
 def sum_with_op(state: Nim, op) -> int:
     *_, result = accumulate(state.rows, op)
