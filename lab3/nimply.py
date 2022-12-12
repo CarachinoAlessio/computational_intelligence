@@ -10,6 +10,7 @@ class Nim:
     def __init__(self, num_rows: int, k: int = None) -> None:
         self._rows = [i * 2 + 1 for i in range(num_rows)]
         self._k = k
+        self.state_history = [(self.rows, None)]
 
     def __bool__(self):
         return sum(self._rows) > 0
@@ -25,6 +26,14 @@ class Nim:
     def k(self) -> int:
         return self._k
 
+    @property
+    def last_state_action(self):
+        if self.state_history:
+            print('state, action', self.state_history[-1])
+            return self.state_history[-1]
+        else:
+            return self.rows, None
+
     def nimming(self, ply: Nimply) -> None:
         row, num_objects = ply
         if self.k is not None:
@@ -32,6 +41,7 @@ class Nim:
         assert self._rows[row] >= num_objects
         assert self._k is None or num_objects <= self._k
         self._rows[row] -= num_objects
+        self.state_history.append((self.rows, (row,num_objects)))
 
     def get_reward(self):
         *_, result = accumulate(self.rows, xor)
@@ -44,7 +54,6 @@ class Nim:
 def nim_sum(state: Nim) -> int:
     *_, result = accumulate(state.rows, xor)
     return result
-
 
 def sum_with_op(state: Nim, op) -> int:
     *_, result = accumulate(state.rows, op)

@@ -1,5 +1,4 @@
 import copy
-import math
 from collections import namedtuple
 from typing import Tuple
 
